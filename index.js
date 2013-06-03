@@ -5,6 +5,9 @@ var through = require('through');
 
 module.exports = function (dir) {
     return function (articleName) {
+        var body = '';
+        var tr = through(write, end);
+        
         if (/[\\\/.]/.test(articleName)) {
             error(400, new Error('malformed characters in request'));
             return tr;
@@ -19,8 +22,6 @@ module.exports = function (dir) {
             else tr.emit('error', error(500, err));
         });
         
-        var body = '';
-        var tr = through(write, end);
         rs.pipe(tr);
         return tr;
         
