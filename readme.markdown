@@ -1,6 +1,6 @@
 # markdown-directory
 
-Create a readable stream for markdown files in a directory.
+serve markdown files from a directory as html
 
 # example
 
