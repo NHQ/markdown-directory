@@ -61,6 +61,9 @@ directory `dir`.
 
 Return a readable stream for the markdown file `name + '.markdown'`.
 
+Error events on `stream` will have a `.statusCode` property that you can copy
+onto `res.statusCode` yourself.
+
 # install
 
 With [npm](https://npmjs.org) do:
