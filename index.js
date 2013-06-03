@@ -5,15 +5,6 @@ var through = require('through');
 
 module.exports = function (dir) {
     return function (articleName) {
-        var body = '';
-        var tr = through(
-            function (buf) { body += buf },
-            function () {
-                this.queue(marked(body));
-                this.queue(null);
-            }
-        );
-        
         if (/[\\\/.]/.test(articleName)) {
             error(400, new Error('malformed characters in request'));
             return tr;
@@ -28,13 +19,23 @@ module.exports = function (dir) {
             else tr.emit('error', error(500, err));
         });
         
+        var body = '';
+        var tr = through(write, end);
+        rs.pipe(tr);
         return tr;
-         
+        
         function error (code, e) {
             e.statusCode = code;
             process.nextTick(function () {
                 tr.emit('error', e);
             });
+        }
+        
+        function write (buf) { body += buf }
+        
+        function end () {
+            this.queue(marked(body));
+            this.queue(null);
         }
     };
 };

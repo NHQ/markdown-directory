@@ -7,10 +7,15 @@ var server = http.createServer(function (req, res) {
     var m = RegExp('^/article/(.+)').exec(req.url);
     if (m) {
         res.setHeader('content-type', 'text/html');
+        var stream = article(m[1]);
+        stream.on('error', function (err) {
+            res.end(err + '\n')
+        });
+        
         fs.createReadStream(__dirname + '/article.html')
             .pipe(hyperstream({
                 'title': m[1],
-                '#article': article(m[1])
+                '#article': stream,
             }))
             .pipe(res)
         ;
