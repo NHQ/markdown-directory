@@ -2,6 +2,8 @@
 
 serve markdown files from a directory as html
 
+[![build status](https://secure.travis-ci.org/substack/markdown-directory.png)](http://travis-ci.org/substack/markdown-directory)
+
 # example
 
 To render some markdown files in `articles/`, you could write:
