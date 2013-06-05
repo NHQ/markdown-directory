@@ -1,12 +1,16 @@
 var path = require('path');
 var fs = require('fs');
 var marked = require('marked');
-var through = require('through');
+var resumer = require('resumer');
 
 module.exports = function (dir) {
     return function (articleName) {
         var body = '';
-        var tr = through(write, end);
+        var tr = resumer(write, end);
+        tr.on('error', function (err) {
+            tr.queue(err + '\n');
+            tr.queue(null);
+        });
         
         if (/[\\\/.]/.test(articleName)) {
             error(400, new Error('malformed characters in request'));
