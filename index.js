@@ -1,20 +1,22 @@
 var path = require('path');
 var fs = require('fs');
 var marked = require('marked');
-var resumer = require('resumer');
+var concat = require('concat-stream');
+var through = require('through');
 
 module.exports = function (dir) {
     return function (articleName) {
         var body = '';
-        var tr = resumer(write, end);
-        tr.on('error', function (err) {
-            tr.queue(err + '\n');
-            tr.queue(null);
+        
+        var outer = through();
+        outer.on('error', function (err) {
+            outer.emit('data', String(err));
+            outer.emit('end');
         });
         
         if (/[\\\/.]/.test(articleName)) {
             error(400, new Error('malformed characters in request'));
-            return tr;
+            return outer;
         }
         
         var file = path.join(dir, articleName + '.markdown');
@@ -23,24 +25,23 @@ module.exports = function (dir) {
             if (err && err.code === 'ENOENT') {
                 error(404, new Error('article not found'));
             }
-            else tr.emit('error', error(500, err));
+            else outer.emit('error', error(500, err));
         });
         
-        rs.pipe(tr);
-        return tr;
+        rs.pipe(concat(function (body) {
+            if (Buffer.isBuffer(body)) {
+                outer.queue(marked(body.toString('utf8')));
+            }
+            else outer.queue(marked(body));
+            outer.queue(null);
+        }));
+        return outer;
         
         function error (code, e) {
             e.statusCode = code;
             process.nextTick(function () {
-                tr.emit('error', e);
+                outer.emit('error', e);
             });
-        }
-        
-        function write (buf) { body += buf }
-        
-        function end () {
-            this.queue(marked(body));
-            this.queue(null);
         }
     };
 };
