@@ -46,6 +46,23 @@ $ curl -s http://localhost:9000/article/robot
 </html>
 ```
 
+Errors are delivered inline:
+
+```
+$ curl -s http://localhost:9000/article/article_that_doesnt_exist
+<html>
+  <head>
+    <title>article_that_doesnt_exist</title>
+  </head>
+  <body>
+    <div id="article">Error: article not found</div>
+  </body>
+</html>
+```
+
+If you want you can listen explicitly for the `'error'` event to do something
+else.
+
 # methods
 
 ``` js
