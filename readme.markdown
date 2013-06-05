@@ -63,8 +63,11 @@ directory `dir`.
 
 Return a readable stream for the markdown file `name + '.markdown'`.
 
-Error events on `stream` will have a `.statusCode` property that you can copy
-onto `res.statusCode` yourself.
+`stream` will emit an `'error'` event but it has a default listener that inlines
+the error message into the output stream so you don't need to worry about
+handling messages unless you care especially much about setting the http status
+codes on the response. The `'error'` events have a `.statusCode` property that
+you can copy onto `res.statusCode` yourself if you want that.
 
 # install
 

@@ -1,10 +1,10 @@
 {
     "name": "markdown-directory",
-    "version": "0.0.0",
+    "version": "0.1.0",
     "description": "serve markdown files from a directory as html",
     "main": "index.js",
     "dependencies": {
-        "through": "~2.3.4",
+        "resumer": "~0.0.0",
         "marked": "~0.2.9"
     },
     "devDependencies": {
