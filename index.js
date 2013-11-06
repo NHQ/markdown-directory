@@ -4,22 +4,29 @@ var marked = require('marked');
 var concat = require('concat-stream');
 var through = require('through');
 
-module.exports = function (dir) {
+module.exports = function (dir, ext, opts) {
+
+	if('object' == typeof ext) {
+		opts = ext;
+		ext = '.markdown';
+	}
+	
+	if(opts) marked.setOptions(opts);
+	
     return function (articleName) {
         var body = '';
-        
         var outer = through();
         outer.on('error', function (err) {
             outer.emit('data', String(err));
             outer.emit('end');
         });
-        
-        if (/[\\\/.]/.test(articleName)) {
+
+/*        if (/[\\\/.]/.test(articleName)) {
             error(400, new Error('malformed characters in request'));
             return outer;
         }
-        
-        var file = path.join(dir, articleName + '.markdown');
+  */      
+        var file = path.join(dir, articleName + ext);
         var rs = fs.createReadStream(file);
         rs.on('error', function (err) {
             if (err && err.code === 'ENOENT') {
